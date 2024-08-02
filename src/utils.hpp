@@ -116,6 +116,4 @@ struct Node
     int score = 0; // 节点分数
     int scoreCumulation = 0; // 分数累计
     Action action {}; // 节点着法
-
-    vector<Node> children {}; // 子节点
 };

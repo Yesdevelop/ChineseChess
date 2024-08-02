@@ -3,14 +3,14 @@
     "configurations": [
         {
             "name": "Debug C++ Program",
-            "type": "cppvsdbg",
+            "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/main.exe",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
-            "console": "externalTerminal",
+            "externalConsole": true,
             "preLaunchTask": "C++"
         }
     ]

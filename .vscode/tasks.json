@@ -1,31 +1,26 @@
 {
-    "tasks": [
+	"version": "2.0.0",
+	"tasks": [
         {
             "type": "cppbuild",
             "label": "C++",
-            "command": "cl",
+            "command": "C:\\HanRuichen\\MinGW-w64\\bin\\g++.exe",
             "args": [
-                "/Zi",
-                "/EHsc",
-                "/Fe${workspaceFolder}/build/main.exe",
-                "/Fd${workspaceFolder}/build/vc140.pdb",
-                "/Fo${workspaceFolder}/build/main.obj",
-                "/utf-8",
+                "-fdiagnostics-color=always",
+                "-fexec-charset=GBK",
+                "-g",
                 "${workspaceFolder}/src/main.cpp",
-                // "/Ox" // 是否尽可能优化
+                "-o",
+                "${workspaceFolder}/build/main.exe"
             ],
             "options": {
                 "cwd": "${workspaceFolder}"
             },
             "problemMatcher": [
-                "$msCompile"
+                "$gcc"
             ],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
-            "detail": "C++ build by MSVC."
+            "group": "build",
+            "detail": "compiler: C:\\HanRuichen\\MinGW-w64\\bin\\g++.exe"
         }
-    ],
-    "version": "2.0.0"
+    ]
 }

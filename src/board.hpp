@@ -595,8 +595,8 @@ ACTIONS Board::getAllActionsOfTeam(TEAM team)
 Node Board::evaluateBestNode(int depth, int maximumDepth, Node &father)
 {
     searchCount++;
-    // 节点类型
     NODE_TYPE currentType = !father.type;
+    vector<Node> children {};
     // 列出的所有可行着法
     ACTIONS availableActions = this->getAllActionsOfTeam(isRedTurn ? RED : BLACK);
     // 着法分数表
@@ -628,7 +628,7 @@ Node Board::evaluateBestNode(int depth, int maximumDepth, Node &father)
         }
 
         // 向父节点推送当前节点
-        father.children.push_back(node);
+        children.push_back(node);
         // 分数表内推送当前节点
         scores.push_back(node.score);
 
@@ -648,7 +648,7 @@ Node Board::evaluateBestNode(int depth, int maximumDepth, Node &father)
     }
 
     // 若是没有任何可行着法
-    if (father.children.empty())
+    if (children.empty())
     {
         // 创建一个最差分数的着法并传给父亲
         Node placeholder{father.alpha, father.beta, currentType};
@@ -668,5 +668,5 @@ Node Board::evaluateBestNode(int depth, int maximumDepth, Node &father)
     }
 
     // 返回给父亲
-    return father.children.at(bestIndex);
+    return children.at(bestIndex);
 }
