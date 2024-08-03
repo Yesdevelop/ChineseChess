@@ -2,6 +2,7 @@
 #include "defines.hpp"
 #include "utils.hpp"
 #include "chessmap.hpp"
+#include "bitboard.hpp"
 
 // -----类声明----- //
 
@@ -109,7 +110,7 @@ void Board::printBoard()
 /// @param depth 深度
 void Board::makeDecision(int depth)
 {
-    Node root = Node{MIN_NUMBER, MAX_NUMBER, isRedTurn ? MAX : MIN};
+    Node root = Node{MIN_NUMBER, MAX_NUMBER, isRedTurn ? NODE_MAX : NODE_MIN};
     Node bestNode = evaluateBestNode(0, depth, root);
     Action v = bestNode.action;
     moveTo(v.x1, v.y1, v.x2, v.y2);
@@ -199,7 +200,7 @@ inline void Board::moveTo(int x1, int y1, int x2, int y2)
 {
     chessMap.on(x2, y2) = chessMap.on(x1, y1);
     chessMap.on(x1, y1) = 0;
-    isRedTurn = !isRedTurn;
+    isRedTurn = -isRedTurn;
 }
 
 // -----棋子函数----- //
@@ -601,7 +602,7 @@ ACTIONS Board::getAllActionsOfTeam(TEAM team)
 Node Board::evaluateBestNode(int depth, int maximumDepth, Node &father)
 {
     searchCount++;
-    NODE_TYPE currentType = !father.type;
+    NODE_TYPE currentType = NODE_TYPE(-father.type);
     vector<Node> children{};
     // 列出的所有可行着法
     ACTIONS availableActions = this->getAllActionsOfTeam(isRedTurn ? RED : BLACK);
@@ -642,11 +643,11 @@ Node Board::evaluateBestNode(int depth, int maximumDepth, Node &father)
         scores.push_back(node.score);
 
         // Alpha beta剪枝算法
-        if (father.type == MAX && node.score > father.alpha)
+        if (father.type == NODE_MAX && node.score > father.alpha)
         {
             father.alpha = node.score;
         }
-        else if (father.type == MIN && node.score < father.beta)
+        else if (father.type == NODE_MIN && node.score < father.beta)
         {
             father.beta = node.score;
         }
@@ -669,7 +670,7 @@ Node Board::evaluateBestNode(int depth, int maximumDepth, Node &father)
 
     // 获取最好的节点
     int bestIndex = -1;
-    if (father.type == MAX)
+    if (father.type == NODE_MAX)
     {
         bestIndex = getIndexOfMax<vector<int>>(scores);
     }

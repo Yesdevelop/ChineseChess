@@ -2,27 +2,35 @@
 
 #include <array>
 #include <iostream>
-#include <string>
+#include <cstring>
 #include <vector>
+#include <cassert>
 
 #include "utils.hpp"
 
 using namespace std;
 
+using uint8 = unsigned char;
+using uint16 = unsigned short;
+using uint32 = unsigned int;
+using uint64 = unsigned long long;
 using CHESSID = int;
-using TEAM = int;
-using CHESSDEF = int;
-using NODE_TYPE = bool;
 using CHESSMAP = array<array<CHESSID, 10>, 9>;
-const CHESSDEF EMPTY = 0;
-const CHESSDEF OUT = 8;
-const CHESSDEF KING = 1;
-const CHESSDEF GUARD = 2;
-const CHESSDEF BISHOP = 3;
-const CHESSDEF KNIGHT = 4;
-const CHESSDEF ROOK = 5;
-const CHESSDEF CANNON = 6;
-const CHESSDEF PAWN = 7;
+
+enum CHESSDEF
+{
+    EMPTY = 0,
+    OUT = 8,
+    KING = 1,
+    GUARD = 2,
+    BISHOP = 3,
+    KNIGHT = 4,
+    ROOK = 5,
+    CANNON = 6,
+    PAWN = 7
+};
+
+
 const CHESSID R_KING = 1;
 const CHESSID R_GUARD = 2;
 const CHESSID R_BISHOP = 3;
@@ -37,12 +45,21 @@ const CHESSID B_KNIGHT = -4;
 const CHESSID B_ROOK = -5;
 const CHESSID B_CANNON = -6;
 const CHESSID B_PAWN = -7;
-const TEAM RED = 1;
-const TEAM BLACK = -1;
+
+enum TEAM {
+    RED = 1,
+    NO_TEAM = 0,
+    BLACK = -1
+};
+
+enum NODE_TYPE {
+    NODE_MAX = 1,
+    NODE_MIN = -1
+};
+
 const int MIN_NUMBER = -100000000;
 const int MAX_NUMBER = 100000000;
-const NODE_TYPE MAX = true;
-const NODE_TYPE MIN = false;
+
 const CHESSMAP DEFAULT_CHESSMAP{
     {{R_ROOK, 0, 0, R_PAWN, 0, 0, B_PAWN, 0, 0, B_ROOK},
      {R_KNIGHT, 0, R_CANNON, 0, 0, 0, 0, B_CANNON, 0, B_KNIGHT},
@@ -54,11 +71,24 @@ const CHESSMAP DEFAULT_CHESSMAP{
      {R_KNIGHT, 0, R_CANNON, 0, 0, 0, 0, B_CANNON, 0, B_KNIGHT},
      {R_ROOK, 0, 0, R_PAWN, 0, 0, B_PAWN, 0, 0, B_ROOK}}};
 int searchCount = 0;
+enum TARGET
+{
+    TARGET_LEFT = 0,
+    TARGET_RIGHT = 1,
+    TARGET_UP = 2,
+    TARGET_DOWN = 3
+};
+
+enum DIRECTION
+{
+    INDEX_LOW = 0,
+    INDEX_UP = 1
+};
 
 /// @brief 获取chessid的chessdef
 CHESSDEF toChessdef(CHESSID chessid)
 {
-    return abs(chessid);
+    return CHESSDEF(abs(chessid));
 }
 
 /// @brief 获取chessdef的team
@@ -66,7 +96,7 @@ TEAM toTeam(CHESSID chessid)
 {
     if (chessid == 0)
     {
-        return 0;
+        return NO_TEAM;
     }
     else
     {
