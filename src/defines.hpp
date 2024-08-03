@@ -4,10 +4,31 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <cstring>
+#include <cassert>
 
 #include "utils.hpp"
 
 using namespace std;
+
+typedef unsigned char uint8;
+typedef unsigned short uint16;
+typedef unsigned int uint32;
+typedef unsigned long long uint64;
+
+enum TARGET
+{
+    TARGET_LEFT = 0,
+    TARGET_RIGHT = 1,
+    TARGET_UP = 2,
+    TARGET_DOWN = 3
+};
+
+enum DIRECTION
+{
+    INDEX_LOW = 0,
+    INDEX_UP = 1
+};
 
 using CHESSID = int;
 using TEAM = int;

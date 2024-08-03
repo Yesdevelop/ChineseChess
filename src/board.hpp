@@ -2,6 +2,7 @@
 #include "defines.hpp"
 #include "utils.hpp"
 #include "chessmap.hpp"
+#include "bitboard.hpp"
 
 // -----类声明----- //
 
