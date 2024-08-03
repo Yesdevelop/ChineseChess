@@ -1,4 +1,4 @@
-#include "calculateScore.hpp"
+#include "evaluate.hpp"
 #include "defines.hpp"
 #include "utils.hpp"
 
@@ -7,22 +7,24 @@
 /// @brief 棋盘类
 class Board
 {
-public: // 棋盘内容
+public:
+    // 棋盘内容
     ChessMap chessMap{DEFAULT_CHESSMAP};
     bool isRedTurn = true;
 
-public: // 对外接口
+    // 对外接口
     TARGETS getMovesOf(CHESSID chessdef, int x, int y);
     void printBoard();
     void makeDecision(int depth);
 
-protected: // 工具函数
+protected:
+    // 工具函数
     TEAM teamOn(int x, int y);
     CHESSID chessOn(int x, int y);
     TARGETS removeImpossible(TARGETS originalMoves, CHESSDEF chessdef, TEAM team);
     void moveTo(int x1, int y1, int x2, int y2);
 
-protected: // 棋子函数
+    // 棋子函数
     TARGETS king(int x, int y, TEAM team);
     TARGETS guard(int x, int y, TEAM team);
     TARGETS bishop(int x, int y, TEAM team);
@@ -31,7 +33,7 @@ protected: // 棋子函数
     TARGETS cannon(int x, int y, TEAM team);
     TARGETS pawn(int x, int y, TEAM team);
 
-public: // 自动走棋实现
+    // 自动走棋实现
     int getScore(int x, int y);
     ACTIONS getAllActionsOfTeam(TEAM team);
     Node evaluateBestNode(int depth, int maxDepth, Node &father);
@@ -69,7 +71,7 @@ TARGETS Board::getMovesOf(CHESSID chessid, int x, int y)
         return pawn(x, y, team);
         break;
     default:
-        Log::error("ERROR CHESSID in Board::getMovesOf!");
+        DebugHelper::error("ERROR CHESSID in Board::getMovesOf!");
         return TARGETS{};
     }
 }
@@ -203,6 +205,7 @@ void Board::moveTo(int x1, int y1, int x2, int y2)
 // -----棋子函数----- //
 
 /// @brief 获取帅、将的所有走法
+/// @note ----------------------------需要使用位棋盘加速------------------------------------------
 TARGETS Board::king(int x, int y, TEAM team)
 {
     TARGETS originalMoves = {Position(x + 1, y), Position(x - 1, y),
@@ -317,6 +320,7 @@ TARGETS Board::knight(int x, int y, TEAM team)
 }
 
 /// @brief 获取车所有走法
+/// @note ----------------------------需要使用位棋盘加速------------------------------------------
 TARGETS Board::rook(int x, int y, TEAM team)
 {
     TARGETS moves;
@@ -373,6 +377,7 @@ TARGETS Board::rook(int x, int y, TEAM team)
 }
 
 /// @brief 获取炮所有走法
+/// @note ----------------------------需要使用位棋盘加速------------------------------------------
 TARGETS Board::cannon(int x, int y, TEAM team)
 {
     TARGETS moves;
@@ -545,7 +550,7 @@ TARGETS Board::pawn(int x, int y, TEAM team)
 /// @brief 获取指定位置上的棋子的分数
 int Board::getScore(int x, int y)
 {
-    return calculateScore(chessMap, x, y);
+    return evaluate(chessMap, x, y);
 }
 
 /// @brief 获取某一个队伍所有可行着法
@@ -596,7 +601,7 @@ Node Board::evaluateBestNode(int depth, int maximumDepth, Node &father)
 {
     searchCount++;
     NODE_TYPE currentType = !father.type;
-    vector<Node> children {};
+    vector<Node> children{};
     // 列出的所有可行着法
     ACTIONS availableActions = this->getAllActionsOfTeam(isRedTurn ? RED : BLACK);
     // 着法分数表
@@ -605,6 +610,9 @@ Node Board::evaluateBestNode(int depth, int maximumDepth, Node &father)
     // 遍历
     for (Action v : availableActions)
     {
+        time_t start;
+        if (depth == 0)
+            start = DebugHelper::getTime();
         // 初始化
         Node node{father.alpha, father.beta, currentType};
         node.action = v;
@@ -645,6 +653,8 @@ Node Board::evaluateBestNode(int depth, int maximumDepth, Node &father)
         {
             break;
         }
+        if (depth == 0)
+            DebugHelper::duration(start);
     }
 
     // 若是没有任何可行着法

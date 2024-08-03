@@ -88,7 +88,7 @@ const CHESSMAP POS_PAWN{
      {0, 0, 0, 0, 2, 6, 10, 14, 18, 0}}};
 
 /// @brief 算分函数
-int calculateScore(ChessMap chessMap, int x, int y)
+int evaluate(ChessMap chessMap, int x, int y)
 {
     CHESSID chessid = chessMap.on(x, y);
     CHESSDEF chessdef = toChessdef(chessid);
