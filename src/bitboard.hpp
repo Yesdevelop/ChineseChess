@@ -2,6 +2,8 @@
 
 #include "defines.hpp"
 
+using namespace std;
+
 /// @brief 位棋盘
 class BitBoard
 {
