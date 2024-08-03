@@ -1,6 +1,7 @@
 #pragma once
 #include "defines.hpp"
 #include "utils.hpp"
+#include "chessmap.hpp"
 
 const int SCORE_KING = 100000;
 const int SCORE_GUARD = 200;

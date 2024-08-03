@@ -1,14 +1,14 @@
 #include "evaluate.hpp"
 #include "defines.hpp"
 #include "utils.hpp"
+#include "chessmap.hpp"
 
 // -----类声明----- //
 
 /// @brief 棋盘类
 class Board
 {
-public:
-    // 棋盘内容
+public:    // 棋盘内容
     ChessMap chessMap{DEFAULT_CHESSMAP};
     bool isRedTurn = true;
 
@@ -34,7 +34,7 @@ protected:
     TARGETS pawn(int x, int y, TEAM team);
 
     // 自动走棋实现
-    int getScore(int x, int y);
+    int evaluateScore(int x, int y);
     ACTIONS getAllActionsOfTeam(TEAM team);
     Node evaluateBestNode(int depth, int maxDepth, Node &father);
 };
@@ -119,9 +119,9 @@ void Board::makeDecision(int depth)
 // -----工具函数----- //
 
 /// @brief 获取指定位置的棋子队伍
-TEAM Board::teamOn(int x, int y)
+inline TEAM Board::teamOn(int x, int y)
 {
-    return toTeam(chessMap.on(x, y));
+    return this->chessMap.teamOn(x, y);
 }
 
 /// @brief 过滤棋子行棋范围外的位置和己方棋子占据的位置，即排除不可能的行棋方案
@@ -182,7 +182,7 @@ TARGETS Board::removeImpossible(TARGETS originalMoves, CHESSDEF chessdef, TEAM t
 }
 
 /// @brief 获取棋盘上某个位置的棋子
-CHESSID Board::chessOn(int x, int y)
+inline CHESSID Board::chessOn(int x, int y)
 {
     if (x >= 0 && x <= 8 && y >= 0 && y <= 9)
     {
@@ -195,7 +195,7 @@ CHESSID Board::chessOn(int x, int y)
 }
 
 /// @brief 移动棋子
-void Board::moveTo(int x1, int y1, int x2, int y2)
+inline void Board::moveTo(int x1, int y1, int x2, int y2)
 {
     chessMap.on(x2, y2) = chessMap.on(x1, y1);
     chessMap.on(x1, y1) = 0;
@@ -548,7 +548,7 @@ TARGETS Board::pawn(int x, int y, TEAM team)
 // -----自动走棋实现----- //
 
 /// @brief 获取指定位置上的棋子的分数
-int Board::getScore(int x, int y)
+inline int Board::evaluateScore(int x, int y)
 {
     return evaluate(chessMap, x, y);
 }
@@ -556,6 +556,7 @@ int Board::getScore(int x, int y)
 /// @brief 获取某一个队伍所有可行着法
 /// @param team 队伍
 /// @return 所有可行着法的vector
+/// @note --------------------------------性能问题：遍历了整个棋盘---------------------------------
 ACTIONS Board::getAllActionsOfTeam(TEAM team)
 {
     ACTIONS result{};
@@ -616,7 +617,7 @@ Node Board::evaluateBestNode(int depth, int maximumDepth, Node &father)
         // 初始化
         Node node{father.alpha, father.beta, currentType};
         node.action = v;
-        node.scoreCumulation = father.scoreCumulation + this->getScore(v.x2, v.y2);
+        node.scoreCumulation = father.scoreCumulation + this->evaluateScore(v.x2, v.y2);
 
         // 若没有到达最大深度
         if (depth < maximumDepth)
